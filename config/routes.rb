@@ -14,6 +14,8 @@ Rails.application.routes.draw do
           patch :update_mileage
         end
       end
+
+      resources :services, only: %i[index show create update destroy]
     end
   end
 end
