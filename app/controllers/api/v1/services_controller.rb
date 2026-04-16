@@ -84,12 +84,7 @@ module Api
       end
 
       def update_params
-        permitted = {}
-        permitted[:name] = params[:name] if params.key?(:name)
-        permitted[:description] = params[:description] if params.key?(:description)
-        permitted[:base_price] = params[:base_price] if params.key?(:base_price)
-        permitted[:estimated_duration_minutes] = params[:estimated_duration_minutes] if params.key?(:estimated_duration_minutes)
-        permitted
+        params.permit(:name, :description, :base_price, :estimated_duration_minutes).to_h.symbolize_keys
       end
 
       def serialize(service)

@@ -104,12 +104,7 @@ module Api
       end
 
       def update_params
-        permitted = {}
-        permitted[:make] = params[:make] if params.key?(:make)
-        permitted[:model] = params[:model] if params.key?(:model)
-        permitted[:year] = params[:year] if params.key?(:year)
-        permitted[:color] = params[:color] if params.key?(:color)
-        permitted
+        params.permit(:make, :model, :year, :color).to_h.symbolize_keys
       end
 
       def serialize(vehicle)

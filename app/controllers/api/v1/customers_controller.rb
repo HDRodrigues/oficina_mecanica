@@ -85,19 +85,16 @@ module Api
         Registrations::DeactivateCustomer.new(customer_repository: repository)
       end
 
+      ADDRESS_FIELDS = %i[zip_code street number complement city state].freeze
+
       def address_params
         return nil unless params[:address]
 
-        params[:address].permit(:zip_code, :street, :number, :complement, :city, :state).to_h.symbolize_keys
+        params[:address].permit(*ADDRESS_FIELDS).to_h.symbolize_keys
       end
 
       def update_params
-        permitted = {}
-        permitted[:name] = params[:name] if params.key?(:name)
-        permitted[:email] = params[:email] if params.key?(:email)
-        permitted[:phone] = params[:phone] if params.key?(:phone)
-        permitted[:address] = address_params if params.key?(:address)
-        permitted
+        params.permit(:name, :email, :phone, address: ADDRESS_FIELDS).to_h.deep_symbolize_keys
       end
 
       def serialize(customer)
