@@ -10,7 +10,19 @@ RSpec.describe 'Api::V1::WorkOrders', openapi_spec: 'v1/swagger.json', type: :re
       security [ { bearerAuth: [] } ]
 
       response '200', 'successful' do
-        schema type: :array, items: { '$ref' => '#/components/schemas/WorkOrder' }
+        schema type: :object,
+               properties: {
+                 data: { type: :array, items: { '$ref' => '#/components/schemas/WorkOrder' } },
+                 pagination: {
+                   type: :object,
+                   properties: {
+                     page: { type: :integer },
+                     per_page: { type: :integer },
+                     total: { type: :integer },
+                     total_pages: { type: :integer }
+                   }
+                 }
+               }
         let(:Authorization) { auth_token }
         run_test!
       end

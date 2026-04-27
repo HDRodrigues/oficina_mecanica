@@ -93,25 +93,51 @@ RSpec.configure do |config|
               vehicle_id: { type: :integer },
               mechanic_id: { type: :integer, nullable: true },
               status: { type: :string, enum: %w[received diagnosing awaiting_approval approved in_progress completed rejected] },
-              description: { type: :string },
+              problem_description: { type: :string },
+              line_items: {
+                type: :array,
+                items: {
+                  type: :object,
+                  properties: {
+                    id: { type: :integer },
+                    item_type: { type: :string },
+                    reference_id: { type: :integer },
+                    name_snapshot: { type: :string },
+                    price_snapshot: { type: :string },
+                    quantity: { type: :integer }
+                  }
+                }
+              },
               created_at: { type: :string, format: :date_time },
               updated_at: { type: :string, format: :date_time },
               executed_at: { type: :string, format: :date_time, nullable: true },
               completed_at: { type: :string, format: :date_time, nullable: true }
             },
-            required: %w[id protocol customer_id vehicle_id status description]
+            required: %w[id protocol customer_id vehicle_id status problem_description line_items]
           },
           Quote: {
             type: :object,
             properties: {
               id: { type: :integer },
               work_order_id: { type: :integer },
-              total_price: { type: :string },
+              total: { type: :string },
               status: { type: :string, enum: %w[created sent approved rejected] },
-              created_at: { type: :string, format: :date_time },
-              updated_at: { type: :string, format: :date_time }
+              line_items: {
+                type: :array,
+                items: {
+                  type: :object,
+                  properties: {
+                    id: { type: :integer },
+                    description: { type: :string },
+                    quantity: { type: :integer },
+                    unit_price: { type: :string },
+                    subtotal: { type: :string }
+                  }
+                }
+              },
+              created_at: { type: :string, format: :date_time }
             },
-            required: %w[id work_order_id total_price status]
+            required: %w[id work_order_id total status line_items created_at]
           },
           Error: {
             type: :object,
@@ -119,16 +145,6 @@ RSpec.configure do |config|
               error: { type: :string }
             },
             required: %w[error]
-          },
-          ValidationErrors: {
-            type: :object,
-            properties: {
-              errors: {
-                type: :object,
-                additionalProperties: { type: :array, items: { type: :string } }
-              }
-            },
-            required: %w[errors]
           }
         },
         securitySchemes: {

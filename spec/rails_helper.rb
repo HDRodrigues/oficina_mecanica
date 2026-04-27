@@ -74,13 +74,6 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
   config.include AuthHelpers, type: :request
-
-  # Exclude unmigrated rswag specs from the regular test suite to avoid failures from missing let blocks.
-  # During swaggerize, we need these specs to generate the OpenAPI doc.
-  # Remove this filter once all specs are merged.
-  unless ARGV.any? { |arg| arg.include?('SwaggerFormatter') }
-    config.filter_run_excluding openapi_spec: /.+/
-  end
 end
 
 require "shoulda-matchers"

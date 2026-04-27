@@ -1640,9 +1640,31 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WorkOrder"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/WorkOrder"
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        },
+                        "total": {
+                          "type": "integer"
+                        },
+                        "total_pages": {
+                          "type": "integer"
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -2284,8 +2306,34 @@
               "rejected"
             ]
           },
-          "description": {
+          "problem_description": {
             "type": "string"
+          },
+          "line_items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "item_type": {
+                  "type": "string"
+                },
+                "reference_id": {
+                  "type": "integer"
+                },
+                "name_snapshot": {
+                  "type": "string"
+                },
+                "price_snapshot": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "integer"
+                }
+              }
+            }
           },
           "created_at": {
             "type": "string",
@@ -2312,7 +2360,8 @@
           "customer_id",
           "vehicle_id",
           "status",
-          "description"
+          "problem_description",
+          "line_items"
         ]
       },
       "Quote": {
@@ -2324,7 +2373,7 @@
           "work_order_id": {
             "type": "integer"
           },
-          "total_price": {
+          "total": {
             "type": "string"
           },
           "status": {
@@ -2336,11 +2385,30 @@
               "rejected"
             ]
           },
-          "created_at": {
-            "type": "string",
-            "format": "date_time"
+          "line_items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "integer"
+                },
+                "unit_price": {
+                  "type": "string"
+                },
+                "subtotal": {
+                  "type": "string"
+                }
+              }
+            }
           },
-          "updated_at": {
+          "created_at": {
             "type": "string",
             "format": "date_time"
           }
@@ -2348,8 +2416,10 @@
         "required": [
           "id",
           "work_order_id",
-          "total_price",
-          "status"
+          "total",
+          "status",
+          "line_items",
+          "created_at"
         ]
       },
       "Error": {
@@ -2361,23 +2431,6 @@
         },
         "required": [
           "error"
-        ]
-      },
-      "ValidationErrors": {
-        "type": "object",
-        "properties": {
-          "errors": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          }
-        },
-        "required": [
-          "errors"
         ]
       }
     },
