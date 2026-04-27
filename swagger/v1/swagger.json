@@ -521,7 +521,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful",
+            "description": "shows below_minimum flag when quantity is below minimum",
             "content": {
               "application/json": {
                 "schema": {
@@ -551,7 +551,7 @@
         "parameters": [],
         "responses": {
           "201": {
-            "description": "item created",
+            "description": "defaults quantity and minimum_quantity to zero when omitted",
             "content": {
               "application/json": {
                 "schema": {
@@ -561,7 +561,7 @@
             }
           },
           "422": {
-            "description": "unprocessable entity",
+            "description": "returns 422 with negative quantity",
             "content": {
               "application/json": {
                 "schema": {
@@ -634,7 +634,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful",
+            "description": "returns the item",
             "content": {
               "application/json": {
                 "schema": {
@@ -647,7 +647,7 @@
             "description": "unauthorized"
           },
           "404": {
-            "description": "not found"
+            "description": "returns 404 when item not found"
           }
         }
       },
@@ -673,7 +673,7 @@
         ],
         "responses": {
           "200": {
-            "description": "item updated",
+            "description": "updates item unit_price",
             "content": {
               "application/json": {
                 "schema": {
@@ -683,7 +683,7 @@
             }
           },
           "422": {
-            "description": "unprocessable entity",
+            "description": "returns 422 when item not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -743,7 +743,7 @@
         ],
         "responses": {
           "200": {
-            "description": "item deactivated",
+            "description": "deactivates the item",
             "content": {
               "application/json": {
                 "schema": {
@@ -753,7 +753,7 @@
             }
           },
           "422": {
-            "description": "unprocessable entity",
+            "description": "returns 422 when item not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -791,7 +791,7 @@
         ],
         "responses": {
           "200": {
-            "description": "quantity added",
+            "description": "increments quantity and returns the full item",
             "content": {
               "application/json": {
                 "schema": {
@@ -801,7 +801,7 @@
             }
           },
           "422": {
-            "description": "invalid amount or item not found",
+            "description": "returns 422 when amount is negative",
             "content": {
               "application/json": {
                 "schema": {
@@ -856,7 +856,7 @@
         ],
         "responses": {
           "200": {
-            "description": "quantity decreased",
+            "description": "decrements quantity and returns the full item",
             "content": {
               "application/json": {
                 "schema": {
@@ -866,7 +866,7 @@
             }
           },
           "422": {
-            "description": "insufficient stock or invalid amount",
+            "description": "returns 422 when item not found",
             "content": {
               "application/json": {
                 "schema": {
