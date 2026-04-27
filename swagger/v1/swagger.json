@@ -185,7 +185,7 @@
         "parameters": [],
         "responses": {
           "201": {
-            "description": "customer created",
+            "description": "creates a company customer with CNPJ",
             "content": {
               "application/json": {
                 "schema": {
@@ -195,7 +195,7 @@
             }
           },
           "422": {
-            "description": "unprocessable entity",
+            "description": "returns 422 with duplicate document",
             "content": {
               "application/json": {
                 "schema": {
@@ -299,7 +299,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful",
+            "description": "returns empty array when no customers",
             "content": {
               "application/json": {
                 "schema": {
@@ -359,7 +359,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful",
+            "description": "returns the customer",
             "content": {
               "application/json": {
                 "schema": {
@@ -372,7 +372,7 @@
             "description": "unauthorized"
           },
           "404": {
-            "description": "not found"
+            "description": "returns 404 when customer not found"
           }
         }
       },
@@ -398,7 +398,7 @@
         ],
         "responses": {
           "200": {
-            "description": "customer updated",
+            "description": "updates customer address",
             "content": {
               "application/json": {
                 "schema": {
@@ -408,7 +408,7 @@
             }
           },
           "422": {
-            "description": "unprocessable entity",
+            "description": "returns 422 when customer not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -430,6 +430,16 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "person_type": {
+                    "type": "string",
+                    "enum": [
+                      "individual",
+                      "company"
+                    ]
+                  },
+                  "document": {
+                    "type": "string"
+                  },
                   "name": {
                     "type": "string"
                   },
@@ -438,6 +448,26 @@
                   },
                   "phone": {
                     "type": "string"
+                  },
+                  "address": {
+                    "type": "object",
+                    "properties": {
+                      "zip_code": {
+                        "type": "string"
+                      },
+                      "street": {
+                        "type": "string"
+                      },
+                      "number": {
+                        "type": "string"
+                      },
+                      "city": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               }
@@ -466,14 +496,14 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "customer deleted"
+          "200": {
+            "description": "deactivates the customer"
+          },
+          "422": {
+            "description": "returns 422 when customer not found"
           },
           "401": {
             "description": "unauthorized"
-          },
-          "404": {
-            "description": "not found"
           }
         }
       }
