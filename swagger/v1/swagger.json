@@ -1634,84 +1634,15 @@
             "bearerAuth": []
           }
         ],
-        "parameters": [
-          {
-            "name": "status",
-            "in": "query",
-            "required": false,
-            "description": "Filter by status (received, diagnosing, awaiting_approval, approved, in_progress, completed, rejected)",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "customer_id",
-            "in": "query",
-            "required": false,
-            "description": "Filter by customer ID",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "mechanic_id",
-            "in": "query",
-            "required": false,
-            "description": "Filter by mechanic ID",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "description": "Page number",
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "per_page",
-            "in": "query",
-            "required": false,
-            "description": "Items per page",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "successful",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/WorkOrder"
-                      }
-                    },
-                    "pagination": {
-                      "type": "object",
-                      "properties": {
-                        "page": {
-                          "type": "integer"
-                        },
-                        "per_page": {
-                          "type": "integer"
-                        },
-                        "total": {
-                          "type": "integer"
-                        },
-                        "total_pages": {
-                          "type": "integer"
-                        }
-                      }
-                    }
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkOrder"
                   }
                 }
               }
@@ -1735,7 +1666,7 @@
         "parameters": [],
         "responses": {
           "201": {
-            "description": "work order created",
+            "description": "creates a work order with valid references",
             "content": {
               "application/json": {
                 "schema": {
@@ -1745,7 +1676,7 @@
             }
           },
           "422": {
-            "description": "unprocessable entity",
+            "description": "returns 422 when problem_description is missing",
             "content": {
               "application/json": {
                 "schema": {
@@ -1785,37 +1716,6 @@
         }
       }
     },
-    "/api/v1/work_orders/ready_to_execute": {
-      "get": {
-        "summary": "List approved work orders ready to execute",
-        "tags": [
-          "Work Orders"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WorkOrder"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "unauthorized"
-          }
-        }
-      }
-    },
     "/api/v1/work_orders/{id}": {
       "get": {
         "summary": "Get work order by ID",
@@ -1839,7 +1739,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful",
+            "description": "returns the work order",
             "content": {
               "application/json": {
                 "schema": {
@@ -1852,14 +1752,14 @@
             "description": "unauthorized"
           },
           "404": {
-            "description": "not found"
+            "description": "returns 404 when work order not found"
           }
         }
       }
     },
     "/api/v1/work_orders/{id}/assign": {
       "patch": {
-        "summary": "Assign mechanic",
+        "summary": "Assign mechanic to work order",
         "tags": [
           "Work Orders"
         ],
@@ -1924,7 +1824,7 @@
     },
     "/api/v1/work_orders/{id}/line_items": {
       "post": {
-        "summary": "Add line item (service or part)",
+        "summary": "Add line item to work order",
         "tags": [
           "Work Orders"
         ],
@@ -1945,7 +1845,17 @@
         ],
         "responses": {
           "201": {
-            "description": "line item added",
+            "description": "adds a part line item from inventory",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkOrder"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "preserves price snapshot after catalog price change",
             "content": {
               "application/json": {
                 "schema": {
@@ -1955,7 +1865,7 @@
             }
           },
           "422": {
-            "description": "unprocessable entity",
+            "description": "returns 422 when work order is still in received",
             "content": {
               "application/json": {
                 "schema": {
@@ -2001,7 +1911,7 @@
     },
     "/api/v1/work_orders/{id}/diagnose": {
       "patch": {
-        "summary": "Finalize diagnosis (status → awaiting_approval)",
+        "summary": "Diagnose work order (generates quote)",
         "tags": [
           "Work Orders"
         ],
@@ -2022,7 +1932,7 @@
         ],
         "responses": {
           "200": {
-            "description": "diagnosis finalized, quote generated",
+            "description": "moves to awaiting_approval after items are added",
             "content": {
               "application/json": {
                 "schema": {
@@ -2032,7 +1942,7 @@
             }
           },
           "422": {
-            "description": "unprocessable entity",
+            "description": "returns 422 when there are no line items",
             "content": {
               "application/json": {
                 "schema": {
@@ -2047,9 +1957,40 @@
         }
       }
     },
+    "/api/v1/work_orders/ready_to_execute": {
+      "get": {
+        "summary": "List work orders ready for execution",
+        "tags": [
+          "Work Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns an empty array when there are no approved WOs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkOrder"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      }
+    },
     "/api/v1/work_orders/{id}/execute": {
       "patch": {
-        "summary": "Start execution (status → in_progress)",
+        "summary": "Execute work order",
         "tags": [
           "Work Orders"
         ],
@@ -2070,7 +2011,7 @@
         ],
         "responses": {
           "200": {
-            "description": "execution started",
+            "description": "transitions approved → in_progress",
             "content": {
               "application/json": {
                 "schema": {
@@ -2080,7 +2021,7 @@
             }
           },
           "422": {
-            "description": "unprocessable entity",
+            "description": "returns 422 when work order is not approved",
             "content": {
               "application/json": {
                 "schema": {
@@ -2097,7 +2038,7 @@
     },
     "/api/v1/work_orders/{id}/complete": {
       "patch": {
-        "summary": "Complete work order (status → completed)",
+        "summary": "Complete work order",
         "tags": [
           "Work Orders"
         ],
@@ -2118,7 +2059,7 @@
         ],
         "responses": {
           "200": {
-            "description": "work order completed",
+            "description": "transitions in_progress → completed",
             "content": {
               "application/json": {
                 "schema": {
