@@ -1,9 +1,9 @@
 require 'rails_helper'
 
-# Prevent database access during swagger generation
-ActiveRecord::Base.connection.disconnect! if ActiveRecord::Base.connected?
-
 RSpec.configure do |config|
+  # Swagger specs now run with database access for full test execution.
+  # This allows run_test! to execute real HTTP requests and assert on responses.
+  config.swagger_dry_run = ENV['SWAGGER_DRY_RUN'].present?
   # Specify a root folder where Swagger JSON files are generated
   # NOTE: If you're using the rswag-api to serve API descriptions, you'll need
   # to ensure that it's configured to serve Swagger from the same folder
