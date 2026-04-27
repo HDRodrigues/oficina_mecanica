@@ -75,7 +75,7 @@ RSpec.describe "Api::V1::Customers", openapi_spec: 'v1/swagger.json', type: :req
       end
 
       response '422', 'returns 422 with invalid document' do
-        schema '$ref' => '#/components/schemas/ValidationErrors'
+        schema '$ref' => '#/components/schemas/Error'
         let(:Authorization) { auth_token }
         let(:customer) { valid_params.merge(document: "00000000000") }
         run_test! do |response|
@@ -85,7 +85,7 @@ RSpec.describe "Api::V1::Customers", openapi_spec: 'v1/swagger.json', type: :req
       end
 
       response '422', 'returns 422 with duplicate document' do
-        schema '$ref' => '#/components/schemas/ValidationErrors'
+        schema '$ref' => '#/components/schemas/Error'
         let(:Authorization) { auth_token }
         let(:customer) { valid_params }
         before do
@@ -112,21 +112,8 @@ RSpec.describe "Api::V1::Customers", openapi_spec: 'v1/swagger.json', type: :req
       parameter name: :per_page, in: :query, type: :integer, required: false, description: 'Items per page'
 
       response '200', 'returns all customers' do
-        schema type: :object,
-          properties: {
-            data: {
-              type: :array,
-              items: { '$ref' => '#/components/schemas/Customer' }
-            },
-            pagination: {
-              type: :object,
-              properties: {
-                current_page: { type: :integer },
-                total_pages: { type: :integer },
-                total_items: { type: :integer }
-              }
-            }
-          }
+        schema type: :array,
+               items: { '$ref' => '#/components/schemas/Customer' }
         let(:Authorization) { auth_token }
         before do
           post "/api/v1/customers", params: valid_params, headers: { Authorization: auth_token }, as: :json
@@ -138,29 +125,16 @@ RSpec.describe "Api::V1::Customers", openapi_spec: 'v1/swagger.json', type: :req
           ), headers: { Authorization: auth_token }, as: :json
         end
         run_test! do |response|
-          expect(response.parsed_body["data"].size).to eq(2)
+          expect(response.parsed_body.size).to eq(2)
         end
       end
 
       response '200', 'returns empty array when no customers' do
-        schema type: :object,
-          properties: {
-            data: {
-              type: :array,
-              items: { '$ref' => '#/components/schemas/Customer' }
-            },
-            pagination: {
-              type: :object,
-              properties: {
-                current_page: { type: :integer },
-                total_pages: { type: :integer },
-                total_items: { type: :integer }
-              }
-            }
-          }
+        schema type: :array,
+               items: { '$ref' => '#/components/schemas/Customer' }
         let(:Authorization) { auth_token }
         run_test! do |response|
-          expect(response.parsed_body["data"]).to eq([])
+          expect(response.parsed_body).to eq([])
         end
       end
 
@@ -260,7 +234,7 @@ RSpec.describe "Api::V1::Customers", openapi_spec: 'v1/swagger.json', type: :req
       end
 
       response '422', 'returns 422 when customer not found' do
-        schema '$ref' => '#/components/schemas/ValidationErrors'
+        schema '$ref' => '#/components/schemas/Error'
         let(:Authorization) { auth_token }
         let(:id) { 999999 }
         let(:customer) { { name: "Test" } }
@@ -301,7 +275,7 @@ RSpec.describe "Api::V1::Customers", openapi_spec: 'v1/swagger.json', type: :req
       end
 
       response '422', 'returns 422 when already inactive' do
-        schema '$ref' => '#/components/schemas/ValidationErrors'
+        schema '$ref' => '#/components/schemas/Error'
         let(:Authorization) { auth_token }
         before do
           post "/api/v1/customers", params: valid_params, headers: { Authorization: auth_token }, as: :json
@@ -315,7 +289,7 @@ RSpec.describe "Api::V1::Customers", openapi_spec: 'v1/swagger.json', type: :req
       end
 
       response '422', 'returns 422 when customer not found' do
-        schema '$ref' => '#/components/schemas/ValidationErrors'
+        schema '$ref' => '#/components/schemas/Error'
         let(:Authorization) { auth_token }
         let(:id) { 999999 }
         run_test!

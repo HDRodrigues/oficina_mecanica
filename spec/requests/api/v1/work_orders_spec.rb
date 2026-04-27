@@ -239,7 +239,7 @@ RSpec.describe 'Api::V1::WorkOrders', openapi_spec: 'v1/swagger.json', type: :re
         run_test!
       end
 
-      response '200', 'preserves price snapshot after catalog price change' do
+      response '201', 'preserves price snapshot after catalog price change' do
         schema '$ref' => '#/components/schemas/WorkOrder'
         let(:Authorization) { auth_token }
         before do

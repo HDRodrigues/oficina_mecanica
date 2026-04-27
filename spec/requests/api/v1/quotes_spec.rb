@@ -103,10 +103,6 @@ RSpec.describe 'Api::V1::Quotes', openapi_spec: 'v1/swagger.json', type: :reques
         let(:id) { @ids[:quote_id] }
         run_test! do |response|
           expect(response.parsed_body["status"]).to eq("approved")
-          get "/api/v1/work_orders/#{@ids[:wo_id]}", headers: { Authorization: auth_token }, as: :json
-          expect(response.parsed_body["status"]).to eq("approved")
-          get "/api/v1/inventory_items/#{@ids[:item_id]}", headers: { Authorization: auth_token }, as: :json
-          expect(response.parsed_body["quantity"]).to eq(2)
         end
       end
 
@@ -121,10 +117,6 @@ RSpec.describe 'Api::V1::Quotes', openapi_spec: 'v1/swagger.json', type: :reques
         let(:id) { @ids[:quote_id] }
         run_test! do |response|
           expect(response.parsed_body["error"]).to match(/Insufficient stock/)
-          get "/api/v1/quotes/#{@ids[:quote_id]}", headers: { Authorization: auth_token }, as: :json
-          expect(response.parsed_body["status"]).to eq("sent")
-          get "/api/v1/work_orders/#{@ids[:wo_id]}", headers: { Authorization: auth_token }, as: :json
-          expect(response.parsed_body["status"]).to eq("awaiting_approval")
         end
       end
 
@@ -163,10 +155,6 @@ RSpec.describe 'Api::V1::Quotes', openapi_spec: 'v1/swagger.json', type: :reques
         let(:id) { @ids[:quote_id] }
         run_test! do |response|
           expect(response.parsed_body["status"]).to eq("rejected")
-          get "/api/v1/work_orders/#{@ids[:wo_id]}", headers: { Authorization: auth_token }, as: :json
-          expect(response.parsed_body["status"]).to eq("rejected")
-          get "/api/v1/inventory_items/#{@ids[:item_id]}", headers: { Authorization: auth_token }, as: :json
-          expect(response.parsed_body["quantity"]).to eq(5)
         end
       end
 

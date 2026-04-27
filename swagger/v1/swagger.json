@@ -199,7 +199,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ValidationErrors"
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -303,28 +303,9 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Customer"
-                      }
-                    },
-                    "pagination": {
-                      "type": "object",
-                      "properties": {
-                        "current_page": {
-                          "type": "integer"
-                        },
-                        "total_pages": {
-                          "type": "integer"
-                        },
-                        "total_items": {
-                          "type": "integer"
-                        }
-                      }
-                    }
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Customer"
                   }
                 }
               }
@@ -412,7 +393,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ValidationErrors"
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -1591,7 +1572,7 @@
             }
           },
           "422": {
-            "description": "returns 422 when vehicle not found",
+            "description": "not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1602,9 +1583,6 @@
           },
           "401": {
             "description": "unauthorized"
-          },
-          "404": {
-            "description": "not found"
           }
         },
         "requestBody": {
@@ -1867,16 +1845,6 @@
         ],
         "responses": {
           "201": {
-            "description": "adds a part line item from inventory",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WorkOrder"
-                }
-              }
-            }
-          },
-          "200": {
             "description": "preserves price snapshot after catalog price change",
             "content": {
               "application/json": {
