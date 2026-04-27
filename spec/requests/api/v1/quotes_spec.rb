@@ -10,16 +10,31 @@ RSpec.describe 'Api::V1::Quotes', openapi_spec: 'v1/swagger.json', type: :reques
       security [ { bearerAuth: [] } ]
       parameter name: :id, in: :path, type: :integer, required: true
 
-      response '200', 'successful' do
+      response '200', 'returns the quote created automatically after diagnosis' do
         schema '$ref' => '#/components/schemas/Quote'
-        run_test!
+        let(:Authorization) { auth_token }
+        before do
+          wo_id = setup_quote
+          @quote_id = Persistence::Quotes::QuoteRecord.find_by(work_order_id: wo_id).id
+        end
+        let(:id) { @quote_id }
+        run_test! do |response|
+          body = response.parsed_body
+          expect(body["status"]).to eq("created")
+          expect(body["line_items"].size).to eq(1)
+          expect(body["total"]).to eq("R$ 100.00")
+        end
       end
 
       response '401', 'unauthorized' do
+        let(:Authorization) { nil }
+        let(:id) { 1 }
         run_test!
       end
 
-      response '404', 'not found' do
+      response '404', 'returns 404 when quote not found' do
+        let(:Authorization) { auth_token }
+        let(:id) { 999999 }
         run_test!
       end
     end
@@ -32,17 +47,41 @@ RSpec.describe 'Api::V1::Quotes', openapi_spec: 'v1/swagger.json', type: :reques
       security [ { bearerAuth: [] } ]
       parameter name: :id, in: :path, type: :integer, required: true
 
-      response '200', 'quote sent' do
+      response '200', 'moves status created → sent' do
         schema '$ref' => '#/components/schemas/Quote'
+        let(:Authorization) { auth_token }
+        before do
+          wo_id = setup_quote
+          @quote_id = Persistence::Quotes::QuoteRecord.find_by(work_order_id: wo_id).id
+        end
+        let(:id) { @quote_id }
+        run_test! do |response|
+          expect(response.parsed_body["status"]).to eq("sent")
+        end
+      end
+
+      response '422', 'returns 422 when already sent' do
+        schema '$ref' => '#/components/schemas/Error'
+        let(:Authorization) { auth_token }
+        before do
+          wo_id = setup_quote
+          @quote_id = Persistence::Quotes::QuoteRecord.find_by(work_order_id: wo_id).id
+          patch "/api/v1/quotes/#{@quote_id}/send_to_customer", headers: { Authorization: auth_token }, as: :json
+        end
+        let(:id) { @quote_id }
         run_test!
       end
 
-      response '422', 'unprocessable entity' do
+      response '422', 'returns 422 when quote not found' do
         schema '$ref' => '#/components/schemas/Error'
+        let(:Authorization) { auth_token }
+        let(:id) { 999999 }
         run_test!
       end
 
       response '401', 'unauthorized' do
+        let(:Authorization) { nil }
+        let(:id) { 1 }
         run_test!
       end
     end
@@ -55,17 +94,54 @@ RSpec.describe 'Api::V1::Quotes', openapi_spec: 'v1/swagger.json', type: :reques
       security [ { bearerAuth: [] } ]
       parameter name: :id, in: :path, type: :integer, required: true
 
-      response '200', 'quote approved' do
+      response '200', 'approves the quote, moves WO to approved, and decrements stock' do
         schema '$ref' => '#/components/schemas/Quote'
-        run_test!
+        let(:Authorization) { auth_token }
+        before do
+          @ids = setup_quote_with_part
+        end
+        let(:id) { @ids[:quote_id] }
+        run_test! do |response|
+          expect(response.parsed_body["status"]).to eq("approved")
+          get "/api/v1/work_orders/#{@ids[:wo_id]}", headers: { Authorization: auth_token }, as: :json
+          expect(response.parsed_body["status"]).to eq("approved")
+          get "/api/v1/inventory_items/#{@ids[:item_id]}", headers: { Authorization: auth_token }, as: :json
+          expect(response.parsed_body["quantity"]).to eq(2)
+        end
       end
 
-      response '422', 'unprocessable entity (e.g. insufficient stock)' do
+      response '422', 'returns 422 when parts are out of stock' do
         schema '$ref' => '#/components/schemas/Error'
+        let(:Authorization) { auth_token }
+        before do
+          @ids = setup_quote_with_part
+          patch "/api/v1/inventory_items/#{@ids[:item_id]}/decrease_quantity",
+                params: { amount: 5 }, headers: { Authorization: auth_token }, as: :json
+        end
+        let(:id) { @ids[:quote_id] }
+        run_test! do |response|
+          expect(response.parsed_body["error"]).to match(/Insufficient stock/)
+          get "/api/v1/quotes/#{@ids[:quote_id]}", headers: { Authorization: auth_token }, as: :json
+          expect(response.parsed_body["status"]).to eq("sent")
+          get "/api/v1/work_orders/#{@ids[:wo_id]}", headers: { Authorization: auth_token }, as: :json
+          expect(response.parsed_body["status"]).to eq("awaiting_approval")
+        end
+      end
+
+      response '422', 'returns 422 when quote was already approved (idempotency guard)' do
+        schema '$ref' => '#/components/schemas/Error'
+        let(:Authorization) { auth_token }
+        before do
+          @ids = setup_quote_with_part
+          patch "/api/v1/quotes/#{@ids[:quote_id]}/approve", headers: { Authorization: auth_token }, as: :json
+        end
+        let(:id) { @ids[:quote_id] }
         run_test!
       end
 
       response '401', 'unauthorized' do
+        let(:Authorization) { nil }
+        let(:id) { 1 }
         run_test!
       end
     end
@@ -78,17 +154,32 @@ RSpec.describe 'Api::V1::Quotes', openapi_spec: 'v1/swagger.json', type: :reques
       security [ { bearerAuth: [] } ]
       parameter name: :id, in: :path, type: :integer, required: true
 
-      response '200', 'quote rejected' do
+      response '200', 'rejects the quote, moves WO to rejected, and does not touch inventory' do
         schema '$ref' => '#/components/schemas/Quote'
-        run_test!
+        let(:Authorization) { auth_token }
+        before do
+          @ids = setup_sent_quote_with_part
+        end
+        let(:id) { @ids[:quote_id] }
+        run_test! do |response|
+          expect(response.parsed_body["status"]).to eq("rejected")
+          get "/api/v1/work_orders/#{@ids[:wo_id]}", headers: { Authorization: auth_token }, as: :json
+          expect(response.parsed_body["status"]).to eq("rejected")
+          get "/api/v1/inventory_items/#{@ids[:item_id]}", headers: { Authorization: auth_token }, as: :json
+          expect(response.parsed_body["quantity"]).to eq(5)
+        end
       end
 
       response '422', 'unprocessable entity' do
         schema '$ref' => '#/components/schemas/Error'
+        let(:Authorization) { auth_token }
+        let(:id) { 999999 }
         run_test!
       end
 
       response '401', 'unauthorized' do
+        let(:Authorization) { nil }
+        let(:id) { 1 }
         run_test!
       end
     end
