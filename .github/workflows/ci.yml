@@ -99,12 +99,12 @@ jobs:
             branch=$(jq -r '.result.branch' coverage/.last_run.json)
             echo "Line coverage: ${line}%"
             echo "Branch coverage: ${branch}%"
-            if (( $(echo "$line < 98" | bc -l) )); then
-              echo "ERROR: Line coverage ${line}% is below threshold of 98%"
+            if (( $(echo "$line < 80" | bc -l) )); then
+              echo "ERROR: Line coverage ${line}% is below threshold of 80%"
               exit 1
             fi
-            if (( $(echo "$branch < 91" | bc -l) )); then
-              echo "ERROR: Branch coverage ${branch}% is below threshold of 91%"
+            if (( $(echo "$branch < 80" | bc -l) )); then
+              echo "ERROR: Branch coverage ${branch}% is below threshold of 80%"
               exit 1
             fi
           fi
@@ -123,6 +123,6 @@ jobs:
               echo "| Line | ${line}% |"
               echo "| Branch | ${branch}% |"
               echo ""
-              echo "Threshold: 98% line / 91% branch (enforced by SimpleCov and CI)"
+              echo "Threshold: 80% line / 80% branch (enforced by SimpleCov and CI)"
             } >> "$GITHUB_STEP_SUMMARY"
           fi

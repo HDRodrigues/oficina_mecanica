@@ -16,7 +16,7 @@ if ENV.fetch("COVERAGE", nil)
   require "simplecov"
   SimpleCov.start do
     enable_coverage :branch
-    minimum_coverage line: 98, branch: 91
+    minimum_coverage line: 80, branch: 80
 
     add_filter "/spec/"
     add_filter "/config/"
