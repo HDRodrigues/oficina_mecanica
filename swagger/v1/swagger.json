@@ -1356,7 +1356,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful",
+            "description": "does not expose prices, parts, customer, vehicle, or mechanic",
             "content": {
               "application/json": {
                 "schema": {
@@ -1391,7 +1391,7 @@
             }
           },
           "404": {
-            "description": "not found",
+            "description": "returns 404 for an invalid protocol",
             "content": {
               "application/json": {
                 "schema": {
