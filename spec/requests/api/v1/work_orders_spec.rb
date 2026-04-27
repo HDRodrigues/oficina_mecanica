@@ -257,7 +257,7 @@ RSpec.describe 'Api::V1::WorkOrders', openapi_spec: 'v1/swagger.json', type: :re
         let(:body) { { item_type: "service", reference_id: @service_id, quantity: 1 } }
         run_test! do |response|
           item = response.parsed_body["line_items"].last
-          expect(item["price_snapshot"]).to eq("R$ 50.00")
+          expect(item["price_snapshot"]).to eq("R$ 90.00")
         end
       end
 

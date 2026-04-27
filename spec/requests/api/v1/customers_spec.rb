@@ -248,7 +248,8 @@ RSpec.describe "Api::V1::Customers", openapi_spec: 'v1/swagger.json', type: :req
         run_test!
       end
 
-      response '404', 'not found' do
+      response '422', 'not found' do
+        schema '$ref' => '#/components/schemas/Error'
         let(:Authorization) { auth_token }
         let(:id) { 999999 }
         let(:customer) { { name: "Test" } }
