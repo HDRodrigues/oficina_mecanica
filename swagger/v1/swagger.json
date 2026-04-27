@@ -1427,7 +1427,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful",
+            "description": "returns empty array when no vehicles for customer",
             "content": {
               "application/json": {
                 "schema": {
@@ -1457,7 +1457,7 @@
         "parameters": [],
         "responses": {
           "201": {
-            "description": "vehicle created",
+            "description": "creates a vehicle with Mercosul plate",
             "content": {
               "application/json": {
                 "schema": {
@@ -1467,7 +1467,7 @@
             }
           },
           "422": {
-            "description": "unprocessable entity",
+            "description": "returns 422 when customer does not exist",
             "content": {
               "application/json": {
                 "schema": {
@@ -1542,7 +1542,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful",
+            "description": "returns the vehicle",
             "content": {
               "application/json": {
                 "schema": {
@@ -1555,7 +1555,7 @@
             "description": "unauthorized"
           },
           "404": {
-            "description": "not found"
+            "description": "returns 404 when vehicle not found"
           }
         }
       },
@@ -1581,7 +1581,7 @@
         ],
         "responses": {
           "200": {
-            "description": "vehicle updated",
+            "description": "updates vehicle color",
             "content": {
               "application/json": {
                 "schema": {
@@ -1591,7 +1591,7 @@
             }
           },
           "422": {
-            "description": "unprocessable entity",
+            "description": "returns 422 when vehicle not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1602,6 +1602,9 @@
           },
           "401": {
             "description": "unauthorized"
+          },
+          "404": {
+            "description": "not found"
           }
         },
         "requestBody": {
