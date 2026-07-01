@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_03_193109) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_01_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -73,10 +73,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_03_193109) do
   end
 
   create_table "quotes", force: :cascade do |t|
+    t.string "approval_token", null: false
     t.datetime "created_at", null: false
     t.string "status", default: "created", null: false
     t.datetime "updated_at", null: false
     t.bigint "work_order_id", null: false
+    t.index ["approval_token"], name: "index_quotes_on_approval_token", unique: true
     t.index ["status"], name: "index_quotes_on_status"
     t.index ["work_order_id"], name: "index_quotes_on_work_order_id", unique: true
   end

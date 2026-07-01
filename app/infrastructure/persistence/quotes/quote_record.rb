@@ -14,6 +14,7 @@ module Persistence
       validates :work_order_id, presence: true, uniqueness: true
       validates :status, presence: true,
                          inclusion: { in: ::Quotes::ValueObjects::QuoteStatus::STATES.map(&:to_s) }
+      validates :approval_token, presence: true, uniqueness: true
     end
   end
 end

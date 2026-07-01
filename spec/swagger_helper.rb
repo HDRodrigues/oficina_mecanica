@@ -115,6 +115,7 @@ RSpec.configure do |config|
               work_order_id: { type: :integer },
               total_price: { type: :string },
               status: { type: :string, enum: %w[created sent approved rejected] },
+              approval_token: { type: :string },
               created_at: { type: :string, format: :date_time },
               updated_at: { type: :string, format: :date_time }
             },

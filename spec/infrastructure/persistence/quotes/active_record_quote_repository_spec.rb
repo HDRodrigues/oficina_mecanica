@@ -55,6 +55,7 @@ RSpec.describe Persistence::Quotes::ActiveRecordQuoteRepository do
       expect(found.line_items.size).to eq(1)
       expect(found.line_items.first.description).to eq("Oil Change")
       expect(found.total.cents).to eq(10_000)
+      expect(found.approval_token).to eq(saved.approval_token)
     end
 
     it "returns nil when quote not found" do
@@ -73,6 +74,20 @@ RSpec.describe Persistence::Quotes::ActiveRecordQuoteRepository do
 
     it "returns nil when no quote exists for the WO" do
       expect(repository.find_by_work_order_id(999_999)).to be_nil
+    end
+  end
+
+  describe "#find_by_approval_token" do
+    it "returns the quote matching the token" do
+      saved = repository.save(build_quote(line_items: [ line_item ]))
+
+      found = repository.find_by_approval_token(saved.approval_token)
+
+      expect(found.id).to eq(saved.id)
+    end
+
+    it "returns nil when no quote matches the token" do
+      expect(repository.find_by_approval_token("unknown-token")).to be_nil
     end
   end
 
