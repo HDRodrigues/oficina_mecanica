@@ -19,6 +19,13 @@ module Persistence
         to_entity(record)
       end
 
+      def find_by_approval_token(approval_token)
+        record = QuoteRecord.includes(:quote_line_item_records).find_by(approval_token: approval_token)
+        return nil unless record
+
+        to_entity(record)
+      end
+
       def save(quote)
         record = persist_quote(quote)
         sync_line_items(record, quote.line_items)
@@ -62,6 +69,7 @@ module Persistence
           work_order_id: record.work_order_id,
           line_items: record.quote_line_item_records.map { |line| line_item_to_entity(line) },
           status: record.status.to_sym,
+          approval_token: record.approval_token,
           created_at: record.created_at
         )
       end
@@ -78,7 +86,8 @@ module Persistence
       def to_attributes(quote)
         {
           work_order_id: quote.work_order_id,
-          status: quote.status.to_s
+          status: quote.status.to_s,
+          approval_token: quote.approval_token
         }
       end
 

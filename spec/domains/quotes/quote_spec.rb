@@ -28,6 +28,26 @@ describe Quotes::Quote do
     end
   end
 
+  describe "#approval_token" do
+    it "generates a token when none is provided" do
+      quote = described_class.new(id: 1, work_order_id: 10)
+
+      expect(quote.approval_token).to match(/\A[a-zA-Z0-9]{32}\z/)
+    end
+
+    it "preserves a provided token" do
+      quote = described_class.new(id: 1, work_order_id: 10, approval_token: "custom-token")
+
+      expect(quote.approval_token).to eq("custom-token")
+    end
+
+    it "generates distinct tokens for different instances" do
+      tokens = 10.times.map { described_class.new(id: 1, work_order_id: 10).approval_token }
+
+      expect(tokens.uniq.size).to eq(tokens.size)
+    end
+  end
+
   describe "#total" do
     it "sums subtotals of all line items" do
       quote = described_class.new(id: 1, work_order_id: 10, line_items: items)

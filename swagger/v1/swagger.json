@@ -894,6 +894,90 @@
         }
       }
     },
+    "/api/v1/webhooks/quotes/{approval_token}/approve": {
+      "patch": {
+        "summary": "Approve quote via external token (public endpoint, status → approved, decrements stock)",
+        "tags": [
+          "Quotes Webhooks"
+        ],
+        "security": [],
+        "description": "Public endpoint (no JWT): authenticates the caller by possession of the unguessable approval_token generated per quote, instead of a user session.",
+        "parameters": [
+          {
+            "name": "approval_token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "quote approved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Quote"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "unprocessable entity (unknown token, wrong state, or insufficient stock)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/webhooks/quotes/{approval_token}/reject": {
+      "patch": {
+        "summary": "Reject quote via external token (public endpoint, status → rejected)",
+        "tags": [
+          "Quotes Webhooks"
+        ],
+        "security": [],
+        "description": "Public endpoint (no JWT): authenticates the caller by possession of the unguessable approval_token generated per quote, instead of a user session.",
+        "parameters": [
+          {
+            "name": "approval_token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "quote rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Quote"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "unprocessable entity (unknown token or wrong state)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/quotes/{id}": {
       "get": {
         "summary": "Get quote by ID",
@@ -2115,6 +2199,54 @@
         "responses": {
           "200": {
             "description": "diagnosis finalized, quote generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkOrder"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "unprocessable entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/work_orders/{id}/reject": {
+      "patch": {
+        "summary": "Reject work order (status → rejected) — valid from received or diagnosing",
+        "tags": [
+          "Work Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "work order rejected",
             "content": {
               "application/json": {
                 "schema": {

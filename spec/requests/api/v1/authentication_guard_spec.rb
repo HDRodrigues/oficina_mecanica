@@ -38,4 +38,12 @@ RSpec.describe "Api::V1 authentication guard", type: :request do
       expect(response).to have_http_status(:not_found)
     end
   end
+
+  context "when calling the public quote approval webhook" do
+    it "remains accessible without a token" do
+      patch "/api/v1/webhooks/quotes/unknown-token/approve", as: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
 end
