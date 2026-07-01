@@ -4,6 +4,15 @@
 
 <p>Status atual: <strong><%= @status_label %></strong></p>
 
+<% if @approve_url && @reject_url %>
+  <p>Seu orçamento está pronto. Responda diretamente por aqui:</p>
+  <p>
+    <a href="<%= @approve_url %>">Aprovar orçamento</a>
+    &nbsp;|&nbsp;
+    <a href="<%= @reject_url %>">Recusar orçamento</a>
+  </p>
+<% end %>
+
 <p>
   Para acompanhar sua OS em tempo real, acesse o rastreamento pelo protocolo
   informado acima.

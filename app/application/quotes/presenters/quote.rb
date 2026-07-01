@@ -10,7 +10,6 @@ module Quotes
           id: quote.id,
           work_order_id: quote.work_order_id,
           status: quote.status.to_s,
-          approval_token: quote.approval_token,
           total: Shared::Presenters::Money.call(quote.total),
           line_items: quote.line_items.map { |item| LineItem.call(item) },
           created_at: quote.created_at

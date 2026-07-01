@@ -3,7 +3,11 @@ Atualização da sua Ordem de Serviço
 
 Protocolo: <%= @protocol %>
 Status atual: <%= @status_label %>
-
+<% if @approve_url && @reject_url %>
+Seu orçamento está pronto. Responda diretamente pelos links abaixo:
+Aprovar orçamento: <%= @approve_url %>
+Recusar orçamento: <%= @reject_url %>
+<% end %>
 Para acompanhar sua OS, utilize o protocolo acima.
 
 Obrigado por confiar em nossa oficina.

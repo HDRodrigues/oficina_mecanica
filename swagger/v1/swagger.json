@@ -2793,9 +2793,6 @@
               "rejected"
             ]
           },
-          "approval_token": {
-            "type": "string"
-          },
           "created_at": {
             "type": "string",
             "format": "date_time"
